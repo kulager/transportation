@@ -2,6 +2,9 @@
 
 namespace App\Exceptions;
 
+use App\Core\Utils\RespUtil;
+use App\Models\Enums\ErrorCode;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -29,10 +32,10 @@ class Handler extends ExceptionHandler
     /**
      * Report or log an exception.
      *
-     * @param  \Throwable  $exception
+     * @param  \Throwable $exception
      * @return void
      *
-     * @throws \Throwable
+     * @throws \Exception
      */
     public function report(Throwable $exception)
     {
@@ -42,14 +45,62 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Throwable $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Throwable
      */
     public function render($request, Throwable $exception)
     {
+        if ($request->wantsJson() || \Illuminate\Support\Facades\Request::is('api/*')) {
+            return $this->handleApiException($request, $exception);
+        } else {
+            return $this->handleWebException($request, $exception);
+        }
+    }
+
+    private function handleWebException($request, Throwable $exception)
+    {
+        if ($exception instanceof BaseException) {
+            return $exception->getApiResponse();
+        }
         return parent::render($request, $exception);
     }
+
+
+    private function handleApiException($request, Throwable $exception)
+    {
+        $exception = $this->prepareException($exception);
+
+        if ($exception instanceof BaseException) {
+            return $exception->getApiResponse();
+        }
+
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return $this->unauthenticated($request, $exception);
+        }
+
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            $exception = $this->convertValidationExceptionToResponse($exception, $request);
+        }
+        return parent::render($request, $exception);
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->wantsJson() || \Illuminate\Support\Facades\Request::is('api/*')) {
+            return RespUtil::resp([
+                'errors' => [
+                    trans('auth.unauthorized')
+                ],
+                'errorCode' => ErrorCode::UNAUTHORIZED
+            ], 401);
+        } else {
+//            return response()->view('modules.admin.core.errors.404', [], 404);
+            return redirect()->route('login');
+        }
+    }
+
+
 }

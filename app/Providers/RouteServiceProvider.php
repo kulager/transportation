@@ -16,13 +16,32 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected $namespace = 'App\Http\Controllers';
 
+    protected function getApiNamespace($version = null)
+    {
+        $namespace = $this->namespace . '\Api';
+        return $this->configureNamespaceForVersion($namespace, $version);
+    }
+
+    protected function getWebNamespace($version = null)
+    {
+        $namespace = $this->namespace . '\Web';
+        return $this->configureNamespaceForVersion($namespace, $version);
+    }
+
+    private function configureNamespaceForVersion($namespace, $version = null)
+    {
+        if ($version) {
+            $namespace = $namespace . "\V$version";
+        }
+        return $namespace;
+    }
+
     /**
      * The path to the "home" route for your application.
      *
      * @var string
      */
-    public const HOME = '/home';
-
+    public const HOME = '/admin/home';
     /**
      * Define your route model bindings, pattern filters, etc.
      *
@@ -30,51 +49,29 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
-
         parent::boot();
     }
 
-    /**
-     * Define the routes for the application.
-     *
-     * @return void
-     */
     public function map()
     {
-        $this->mapApiRoutes();
-
-        $this->mapWebRoutes();
-
-        //
+        $this->mapApiVersionedRoutes(1);
+        $this->mapApiVersionedRoutes(2);
+        $this->mapWebVersionedRoutes(1);
+        $this->mapWebVersionedRoutes(2);
     }
 
-    /**
-     * Define the "web" routes for the application.
-     *
-     * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
-     */
-    protected function mapWebRoutes()
+    protected function mapWebVersionedRoutes($version)
     {
         Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/web.php'));
+            ->namespace($this->getWebNamespace($version))
+            ->group(base_path("routes/web/V$version/web.php"));
     }
 
-    /**
-     * Define the "api" routes for the application.
-     *
-     * These routes are typically stateless.
-     *
-     * @return void
-     */
-    protected function mapApiRoutes()
+    protected function mapApiVersionedRoutes($version)
     {
-        Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/api.php'));
+        Route::prefix("api/V$version")
+            ->middleware(['api', 'localization'])
+            ->namespace($this->getApiNamespace($version))
+            ->group(base_path("routes/api/V$version/api.php"));
     }
 }

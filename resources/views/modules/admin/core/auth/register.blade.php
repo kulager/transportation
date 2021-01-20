@@ -15,7 +15,7 @@
                 </div>
                 <p class="text-center mb-0">
                     Уже есть аккаунт?
-                    <a class="font-weight-semi-bold" href="{{route('login')}}">Вход здесь</a>
+                    <a class="font-weight-semi-bold" href="{{route('admin.login')}}">Вход здесь</a>
                 </p>
             </form>
         </div>

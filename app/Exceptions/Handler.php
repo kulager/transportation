@@ -98,7 +98,7 @@ class Handler extends ExceptionHandler
             ], 401);
         } else {
 //            return response()->view('modules.admin.core.errors.404', [], 404);
-            return redirect()->route('login');
+            return redirect()->route('admin.login');
         }
     }
 

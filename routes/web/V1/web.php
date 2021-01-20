@@ -29,6 +29,12 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
     });
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/home', ['as' => 'admin.index', 'uses' => 'PageController@home']);
+
+        //Country
+        Route::get('/countries', ['as' => 'country.index', 'uses' => 'CountryController@index']);
+        Route::post('/country/store', ['as' => 'country.store', 'uses' => 'CountryController@store']);
+        Route::post('/country/update', ['as' => 'country.update', 'uses' => 'CountryController@update']);
+
     });
 });
 

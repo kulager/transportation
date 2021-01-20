@@ -24,6 +24,7 @@ class Sidebar extends BaseComponent
     {
         return [
             $this->navItem(route('admin.index'), 'ti-home', 'Главное'),
+            $this->navItem(route('country.index'), 'ti-home', 'Страны'),
         ];
     }
 

@@ -45,6 +45,18 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
         //Address
         Route::get('/boxes', ['as' => 'box.index', 'uses' => 'BoxController@index']);
         Route::post('/boxes/store', ['as' => 'box.store', 'uses' => 'BoxController@store']);
+
+        //Product
+        Route::get('/products', ['as' => 'product.index', 'uses' => 'ProductController@index']);
+        Route::post('/products/store', ['as' => 'product.store', 'uses' => 'ProductController@store']);
+
+        //Driver
+        Route::get('/drivers', ['as' => 'driver.index', 'uses' => 'DriverController@index']);
+        Route::post('/drivers/store', ['as' => 'driver.store', 'uses' => 'DriverController@store']);
+
+        //Company
+        Route::get('/companies', ['as' => 'company.index', 'uses' => 'CompanyController@index']);
+        Route::post('/company/store', ['as' => 'company.store', 'uses' => 'CompanyController@store']);
     });
 });
 

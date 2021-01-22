@@ -12,7 +12,7 @@
             <div class="card h-100">
                 <header class="card-header">
                     <h2 class="h4 card-header-title">Адреса</h2>
-                    <a href="#" class="btn btn-outline-primary mt-3" data-toggle="modal" data-target="#addCountry">
+                    <a href="#" class="btn btn-outline-primary mt-3" data-toggle="modal" data-target="#add">
                         Добавить
                         <i class="ti ti-plus"></i>
                     </a>
@@ -40,7 +40,7 @@
                                     <td>{{$address->created_at}}</td>
                                     <td class="d-inline-block">
                                         <button class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                                data-target="#editCountry{{$address->id}}"><i class="ti ti-pencil"></i>
+                                                data-target="#edit{{$address->id}}"><i class="ti ti-pencil"></i>
                                         </button>
                                         {{--                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal"--}}
                                         {{--                                                data-target="#delete{{$address->id}}"><i class="ti ti-trash"></i>--}}
@@ -72,7 +72,7 @@
                                         {{--                                        </div>--}}
                                     </td>
                                 </tr>
-                                <div class="modal modal-backdrop" id="editCountry{{$address->id}}" tabindex="-1"
+                                <div class="modal modal-backdrop" id="edit{{$address->id}}" tabindex="-1"
                                      role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -110,7 +110,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal modal-backdrop" id="addCountry" tabindex="-1"
+        <div class="modal modal-backdrop" id="add" tabindex="-1"
              role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

@@ -20,7 +20,7 @@ class CreateCompaniesTable extends Migration
             $table->string('bik')->nullable();
             $table->string('bin_iin')->nullable();
             $table->string('bin_inn')->nullable();
-            $table->foreignId('address_id')->constrained('addresses')->nullable();
+            $table->foreignId('address_id')->nullable()->constrained('addresses');
             $table->timestamps();
         });
     }

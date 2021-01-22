@@ -11,7 +11,6 @@ class BoxWebForm implements WithForm
 {
     public static function inputGroups($value = null): array
     {
-        $array = [];
         $array = FormUtil::input('id', 1, null,
             'numeric', $value ? true : false,
             $value ? $value->id : '', null, null, true);

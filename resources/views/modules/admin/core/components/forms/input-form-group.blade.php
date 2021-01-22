@@ -5,7 +5,7 @@
     <input name="{{$name}}"
            id="{{$name}}"
            class="form-control{{ isset($errors) && $errors->has($name) ? ' is-invalid' : '' }}"
-           value="{{ isset($value) ? $value : old($name) }}" {{$required ? ' required' : ''}}
+           value="{{ isset($value) ? $value : old($name) }}" {{$required ? 'required' : ''}}
            type="{{$type}}"
            placeholder="{{$placeholder}}"
            {{$hidden ? 'hidden' : ''}}

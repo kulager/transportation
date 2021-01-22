@@ -4,46 +4,44 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{route('admin.index')}}">Главная</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Страны</li>
+            <li class="breadcrumb-item active" aria-current="page">Типы ящика</li>
         </ol>
     </nav>
     <div class="row">
         <div class="col-md-12 mb-5">
             <div class="card h-100">
                 <header class="card-header">
-                    <h2 class="h4 card-header-title">Страны</h2>
+                    <h2 class="h4 card-header-title">Типы ящика</h2>
                     <a href="#" class="btn btn-outline-primary mt-3" data-toggle="modal" data-target="#addCountry">
                         Добавить
                         <i class="ti ti-plus"></i>
                     </a>
                 </header>
                 <div class="card-body pt-0">
-                    @if($countries->items())
+                    @if($boxes->items())
                         <table class="table table-hover table-light text-center">
                             <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Название</th>
-                                <th>ABBR</th>
                                 <th>Создан</th>
                                 <th>Действия</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($countries as $country)
+                            @foreach($boxes as $box)
                                 <tr>
-                                    <td>{{$country->id}}</td>
-                                    <td>{{$country->name}}</td>
-                                    <td>{{$country->second_name}}</td>
-                                    <td>{{$country->created_at}}</td>
+                                    <td>{{$box->id}}</td>
+                                    <td>{{$box->name}}</td>
+                                    <td>{{$box->created_at}}</td>
                                     <td class="d-inline-block">
                                         <button class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                                data-target="#editCountry{{$country->id}}"><i class="ti ti-pencil"></i>
+                                                data-target="#editCountry{{$box->id}}"><i class="ti ti-pencil"></i>
                                         </button>
                                         {{--                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal"--}}
-                                        {{--                                                data-target="#delete{{$country->id}}"><i class="ti ti-trash"></i>--}}
+                                        {{--                                                data-target="#delete{{$box->id}}"><i class="ti ti-trash"></i>--}}
                                         {{--                                        </button>--}}
-                                        {{--                                        <div class="modal modal-backdrop" id="delete{{$country->id}}" tabindex="-1"--}}
+                                        {{--                                        <div class="modal modal-backdrop" id="delete{{$box->id}}" tabindex="-1"--}}
                                         {{--                                             role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">--}}
                                         {{--                                            <div class="modal-dialog" role="document">--}}
                                         {{--                                                <div class="modal-content">--}}
@@ -55,9 +53,9 @@
                                         {{--                                                    </div>--}}
                                         {{--                                                    <div class="modal-body">--}}
                                         {{--                                                        <p>Вы действительно хотите удалить?</p>--}}
-                                        {{--                                                        <form method="post" action="{{route('region.delete', ['id' => $country->id])}}">--}}
+                                        {{--                                                        <form method="post" action="{{route('region.delete', ['id' => $box->id])}}">--}}
                                         {{--                                                            {{csrf_field()}}--}}
-                                        {{--                                                            <input type="number" value="{{$country->id}}" hidden>--}}
+                                        {{--                                                            <input type="number" value="{{$box->id}}" hidden>--}}
                                         {{--                                                            <button type="submit" class="btn btn-outline-danger mt-3">Удалить безвозвратно<i class="ti ti-trash"></i></button>--}}
                                         {{--                                                        </form>--}}
                                         {{--                                                    </div>--}}
@@ -70,7 +68,7 @@
                                         {{--                                        </div>--}}
                                     </td>
                                 </tr>
-                                <div class="modal modal-backdrop" id="editCountry{{$country->id}}" tabindex="-1"
+                                <div class="modal modal-backdrop" id="editCountry{{$box->id}}" tabindex="-1"
                                      role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
@@ -82,10 +80,10 @@
                                             </div>
                                             <div class="modal-body">
 
-                                                <form action="{{route('country.store')}}" method="post" enctype="multipart/form-data">
+                                                <form action="{{route('box.store')}}" method="post" enctype="multipart/form-data">
                                                     <x-admin.input-form-group-list
                                                         :errors="$errors"
-                                                        :elements="$country->getForm()"/>
+                                                        :elements="$box->getForm()"/>
                                                     <button type="submit" class="offset-md-4 col-md-4 btn btn-block btn-wide btn-primary text-uppercase">
                                                         Сохранить <i class="ti ti-check"></i>
                                                     </button>
@@ -102,8 +100,8 @@
                             @endforeach
                             </tbody>
                         </table>
-                        {{$countries->links()}}
-                    @else <h6>У вас пока нет страны!</h6>
+                        {{$boxes->links()}}
+                    @else <h6>У вас пока нет ящиков!</h6>
                     @endif
                 </div>
             </div>
@@ -119,14 +117,14 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{route('country.store')}}" method="post">
+                        <form action="{{route('box.store')}}" method="post">
                             {{--                        <div class="form-group">--}}
                             {{--                            <textarea class="ckeditor form-control" id="question-ckeditor" name="question"></textarea>--}}
                             {{--                        </div>--}}
                             <div class="form-group">
                                 <x-admin.input-form-group-list
                                     :errors="$errors"
-                                    :elements="$country_web_form"/>
+                                    :elements="$box_web_form"/>
                             </div>
                             <button type="submit" class="offset-md-4 col-md-4 btn btn-block btn-wide btn-primary text-uppercase">
                                 Сохранить <i class="ti ti-check"></i>

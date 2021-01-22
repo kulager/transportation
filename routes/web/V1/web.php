@@ -15,7 +15,7 @@ Route::get('/secure/config/key-generate', ['uses' => 'ConfigController@keyGenera
 Route::get('/secure/config/optimize', ['uses' => 'ConfigController@optimize']);
 
 
-
+Route::get('/', ['uses' => 'Admin\PageController@home'])->middleware('auth');
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
 
     Route::group(['namespace' => 'Auth',], function () {
@@ -33,8 +33,18 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
         //Country
         Route::get('/countries', ['as' => 'country.index', 'uses' => 'CountryController@index']);
         Route::post('/country/store', ['as' => 'country.store', 'uses' => 'CountryController@store']);
-        Route::post('/country/update', ['as' => 'country.update', 'uses' => 'CountryController@update']);
 
+        //City
+        Route::get('/cities', ['as' => 'city.index', 'uses' => 'CityController@index']);
+        Route::post('/city/store', ['as' => 'city.store', 'uses' => 'CityController@store']);
+
+        //Address
+        Route::get('/addresses', ['as' => 'address.index', 'uses' => 'AddressController@index']);
+        Route::post('/address/store', ['as' => 'address.store', 'uses' => 'AddressController@store']);
+
+        //Address
+        Route::get('/boxes', ['as' => 'box.index', 'uses' => 'BoxController@index']);
+        Route::post('/boxes/store', ['as' => 'box.store', 'uses' => 'BoxController@store']);
     });
 });
 

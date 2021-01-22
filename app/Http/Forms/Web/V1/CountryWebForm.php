@@ -4,24 +4,23 @@
 namespace App\Http\Forms\Web\V1;
 
 
+use App\Core\Interfaces\WithForm;
 use App\Http\Forms\Web\FormUtil;
 
-class CountryWebForm
+class CountryWebForm implements WithForm
 {
     public static function inputGroups($value = null): array
     {
         $array = [];
-        if($value) {
             $array = FormUtil::input('id', 1, null,
-                'numeric', true,
-                $value->id, null, null, true);
-        }
+                'numeric', $value ? true : false,
+                $value ? $value->id : '', null, null, true);
         return array_merge(
             $array,
             FormUtil::input('name', 'Казахстанская Республика', 'Название',
-                'text', false, $value ? $value->name : ''),
+                'text', true, $value ? $value->name : ''),
             FormUtil::input('second_name', 'РФ', 'Дополнительное название',
-                'text', false, $value ? $value->second_name : '')
+                'text', true, $value ? $value->second_name : '')
         );
     }
 }

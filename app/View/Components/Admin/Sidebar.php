@@ -24,6 +24,7 @@ class Sidebar extends BaseComponent
     {
         return [
             $this->navItem(route('admin.index'), 'ti-home', 'Главное'),
+            $this->navItem(route('order.index'), 'ti-more', 'Заказы'),
             $this->navItem(route('country.index'), 'ti-flag-alt', 'Страны'),
             $this->navItem(route('city.index'), 'ti-menu-alt', 'Города'),
             $this->navItem(route('address.index'), 'ti-location-arrow', 'Адреса'),

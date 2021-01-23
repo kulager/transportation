@@ -57,6 +57,12 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
         //Company
         Route::get('/companies', ['as' => 'company.index', 'uses' => 'CompanyController@index']);
         Route::post('/company/store', ['as' => 'company.store', 'uses' => 'CompanyController@store']);
+
+        //Order
+        Route::get('/orders', ['as' => 'order.index', 'uses' => 'OrderController@index']);
+        Route::get('/order/create', ['as' => 'order.create', 'uses' => 'OrderController@create']);
+        Route::get('/order/edit/{id}', ['as' => 'order.edit', 'uses' => 'OrderController@create'])->where('id', '[0-9]+');
+        Route::post('/order/store', ['as' => 'order.store', 'uses' => 'OrderController@store']);
     });
 });
 

@@ -24,6 +24,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Название</th>
+                                <th>Цена</th>
                                 <th>ТН ВЭД</th>
                                 <th>Создан</th>
                                 <th>Действия</th>
@@ -34,6 +35,7 @@
                                 <tr>
                                     <td>{{$product->id}}</td>
                                     <td>{{$product->name}}</td>
+                                    <td>{{$product->price}}</td>
                                     <td>{{$product->tn_id}}</td>
                                     <td>{{$product->created_at}}</td>
                                     <td class="d-inline-block">

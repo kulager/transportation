@@ -12,6 +12,7 @@ class ProductWebRequest extends WebBaseRequest
         return [
             'id' => ['numeric', 'exists:products,id', 'nullable'],
             'name' => ['required', 'string'],
+            'price' => ['required', 'numeric'],
             'tn_id' => ['numeric', 'required']
         ];
     }

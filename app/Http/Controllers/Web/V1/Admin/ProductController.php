@@ -23,6 +23,7 @@ class ProductController extends WebBaseController
         }
 
         $product->name = $request->name;
+        $product->price = $request->price;
         $product->tn_id = $request->tn_id;
         $product->save();
 

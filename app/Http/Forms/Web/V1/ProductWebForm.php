@@ -18,6 +18,8 @@ class ProductWebForm implements WithForm
             $array,
             FormUtil::input('name', 'Томаты свежие', 'Название',
                 'text', true, $value ? $value->name : ''),
+            FormUtil::input('price', '1800', 'Цена',
+                'number', true, $value ? $value->price : ''),
             FormUtil::input('tn_id', '0702000007', 'ТН ВЭД',
                 'number', true, $value ? $value->tn_id : '')
         );

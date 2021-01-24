@@ -32,9 +32,21 @@
                                 <tr>
                                     <td>{{$order->id}}</td>
                                     <td>{{$order->document_id}}</td>
-                                    <td class="d-inline-block">
+                                    <td class="d-inline-flex align-items-center">
                                         <a href="{{route('order.edit', ['id' => $order->id])}}" class="btn btn-outline-primary btn-sm"><i class="ti ti-pencil"></i>
                                         </a>
+                                        <form method="post" action="{{route('order.cmr', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">CMR</button>
+                                        </form>
+                                        <form method="post" action="{{route('order.driver', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">Доверенность Водителя</button>
+                                        </form>
+                                        <form method="post" action="{{route('order.goods', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">Товар накладная</button>
+                                        </form>
                                         {{--                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal"--}}
                                         {{--                                                data-target="#delete{{$company->id}}"><i class="ti ti-trash"></i>--}}
                                         {{--                                        </button>--}}

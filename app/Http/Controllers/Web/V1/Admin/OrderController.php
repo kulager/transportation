@@ -250,6 +250,21 @@ class OrderController extends WebBaseController
         return response()->download(storage_path('goods.docx'))->deleteFileAfterSend();
     }
 
+    public function contract($id) {
+        $order = $this->checkOrder($id);
+        $my_template = new TemplateProcessor(storage_path('templates/contract.docx'));
+        $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D «MMMM» Y год'));
+
+        try{
+            $my_template->saveAs(storage_path('contract.docx'));
+        }catch (\Exception $e){
+            throw new WebServiceExplainedException('Техническая ошибка! '. $e->getMessage());
+        }
+
+        return response()->download(storage_path('contract.docx'))->deleteFileAfterSend();
+    }
+
     private function checkOrder($id) {
         $order = Order::with('products.product', 'products.box', 'address.city.country', 'company', 'driver', 'secondDriver')->find($id);
         if(!$order) throw new WebServiceExplainedException('Заказ не найден!');

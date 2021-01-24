@@ -47,6 +47,10 @@
                                             @csrf
                                             <button class="btn btn-outline-primary btn-sm">Товар накладная</button>
                                         </form>
+                                        <form method="post" action="{{route('order.contract', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">Договор</button>
+                                        </form>
                                         {{--                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal"--}}
                                         {{--                                                data-target="#delete{{$company->id}}"><i class="ti ti-trash"></i>--}}
                                         {{--                                        </button>--}}

@@ -16,7 +16,7 @@
         }
 
         @page {
-            margin: 0 .7in .75in .7in;
+            margin: 0 .7in 0 .7in;
             mso-header-margin: .3in;
             mso-footer-margin: .3in;
             mso-page-orientation: landscape;

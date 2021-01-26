@@ -17,7 +17,7 @@
         }
 
         @page {
-            margin: 0 .75in .98in .75in;
+            margin: 0 .75in 0 1.9in;
             mso-header-margin: .51in;
             mso-footer-margin: .51in;
         }
@@ -541,7 +541,7 @@ DIV будут заменены.-->
  width:41pt'>
         <tr height=21 style='height:16.0pt'>
             <td colspan=11 height=21 class=xl95 width=643 style='height:16.0pt;
-  width:483pt'>Счет-фактура №{{$order->document_id}} от {{$date_format}} г
+  width:483pt; padding-top: 100pt'>Счет-фактура №{{$order->document_id}} от {{$date_format}} г
             </td>
         </tr>
         <tr height=15 style='mso-height-source:userset;height:11.25pt'>

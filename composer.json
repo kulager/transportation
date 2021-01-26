@@ -15,8 +15,6 @@
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^2.0",
-        "phpoffice/phpexcel": "^1.8",
-        "phpoffice/phpspreadsheet": "^1.16",
         "phpoffice/phpword": "^0.17.0"
     },
     "require-dev": {

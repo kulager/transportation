@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\V1\Admin;
 
 use App\Exceptions\Web\WebServiceExplainedException;
+use App\Exports\OrderExport;
 use App\Http\Controllers\Web\WebBaseController;
 use App\Http\Requests\Web\V1\OrderWebRequest;
 use App\Models\Entities\Address;
@@ -14,6 +15,7 @@ use App\Models\Entities\OrderProduct;
 use App\Models\Entities\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use NumberFormatter;
 use PhpOffice\PhpWord\TemplateProcessor;
 
@@ -263,6 +265,38 @@ class OrderController extends WebBaseController
         }
 
         return response()->download(storage_path('contract.docx'))->deleteFileAfterSend();
+    }
+
+    public function realization($id) {
+        $order = $this->checkOrder($id);
+        $total_net = 0;
+        $total = 0;
+        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
+        $i = 1;
+        foreach ($order->products as $product) {
+            $total += $product->product->price * $product->net_weight;
+            $total_net += $product->net_weight;
+
+        }
+        $total_net_format = $this->upperFirst($digit->format($total_net), "UTF-8");
+        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
+        $date_format = Carbon::create($order->date)->format('d.m.Y');
+        return $this->adminPagesView('order.realization', compact('order', 'date_format',
+            'total', 'total_net', 'total_format', 'total_net_format', 'i'));
+    }
+
+    public function invoice($id) {
+        $order = $this->checkOrder($id);
+        $total = 0;
+        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
+        $i = 1;
+        foreach ($order->products as $product) {
+            $total += $product->product->price * $product->net_weight;
+        }
+        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
+        $date_format = Carbon::create($order->date)->format('d.m.Y');
+        return $this->adminPagesView('order.invoice', compact('order', 'date_format',
+            'total', 'total_format', 'i'));
     }
 
     private function checkOrder($id) {

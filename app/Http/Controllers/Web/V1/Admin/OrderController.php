@@ -220,7 +220,7 @@ class OrderController extends WebBaseController
 
         foreach ($order->products as $product) {
             $products[] = [
-                'product_tn_id' => $product->product->tn_id,
+                'product_tn_id' => '',
                 'product_name' => $product->product->name,
                 'product_price' => $product->product->price,
                 'box' => $product->box->name,

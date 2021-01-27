@@ -1651,7 +1651,7 @@ DIV будут заменены.-->
   border-left:none;width:161pt'>{{$product->product->name}}
                 </td>
                 <td class=xl84 width=19 style='border-top:none;border-left:none;width:14pt'>&nbsp;</td>
-                <td class=xl85 width=19 style='border-top:none;width:14pt'>&nbsp{{$product->product->tn_id}}</td>
+                <td class=xl85 width=19 style='border-top:none;width:14pt'>&nbsp</td>
                 <td class=xl85 width=9 style='border-top:none;width:7pt'>&nbsp;</td>
                 <td class=xl85 width=9 style='border-top:none;width:7pt'>&nbsp;</td>
                 <td class=xl83 width=19 style='border-top:none;width:14pt'>&nbsp;</td>

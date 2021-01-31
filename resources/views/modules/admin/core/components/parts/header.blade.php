@@ -1,10 +1,10 @@
 <header class="u-header">
     <div class="u-header-left">
         <a class="u-header-logo" href="{{route('admin.index')}}">
-            <img class="u-header-logo__icon" src="{{asset('modules/admin/assets/svg/logo-mini.svg')}}"
-                 alt="Awesome Icon">
-            <img class="u-header-logo__text" src="{{asset('modules/admin/assets/svg/logo-text-light.svg')}}"
-                 alt="Awesome">
+            <img class="u-header-logo__icon" style="height: 30px; width: 30px" src="{{asset('favicon.ico')}}"
+                 alt="Kulager Icon">
+            <h2 class="mt-1 ml-1">Kulager</h2>
+
         </a>
     </div>
     <div class="u-header-middle">

@@ -31,7 +31,7 @@
                             <div class="form-group col-3 required">
                                 <label for="document_id" class="control-label">ID</label>
                                 <input type="number" name="document_id" class="form-control" id="document_id" min="1"
-                                       max="240" value="{{$order ? $order->document_id : old('document_id')}}" required>
+                                       max="999" value="{{$order ? $order->document_id : old('document_id')}}" required>
                             </div>
                             <div class="form-group col-3 required">
                                 <label for="date" class="control-label">Дата</label>
@@ -41,33 +41,38 @@
                             </div>
                             <div class="form-group col-6 required">
                                 <label for="company_id" class="control-label">Компания</label>
-                                <select name="company_id" class="form-control" id="company_id" required>
-                                    <option value="">Не выбрано</option>
+                                <select name="company_id" class="form-control js-example-basic-single" id="company_id" required>
+                                    <option value=""></option>
                                     @foreach($companies as $company)
                                         <option value="{{$company->id}}" {{$order ? $order->company_id == $company->id
                                         ? 'selected' : '' : ''}}>{{$company->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-6 required">
-                                <label for="driver_id" class="control-label">Водитель 1</label>
-                                <select name="driver_id" class="form-control" id="driver_id" required>
-                                    <option value="">Не выбрано</option>
-                                    @foreach($drivers as $driver)
-                                        <option value="{{$driver->id}}" {{$order ? $order->driver_id == $driver->id
-                                        ? 'selected' : '' : ''}}>{{$driver->full_name}}</option>
-                                    @endforeach
-                                </select>
+                            <div class="form-group col-3 required">
+                                <label for="driver_full_name" class="control-label">Водитель 1</label>
+                                <input type="text" name="driver_full_name" class="form-control"
+                                       id="driver_full_name" placeholder="Мамедов 1"
+                                       value="{{$order ? $order->driver_full_name : old('driver_full_name')}}">
                             </div>
-                            <div class="form-group col-6">
-                                <label for="second_driver_id" class="control-label">Водитель 2</label>
-                                <select name="second_driver_id" class="form-control" id="second_driver_id">
-                                    <option value="">Не выбрано</option>
-                                    @foreach($drivers as $driver)
-                                        <option value="{{$driver->id}}" {{$order ? $order->second_driver_id == $driver->id
-                                        ? 'selected' : '' : ''}}>{{$driver->full_name}}</option>
-                                    @endforeach
-                                </select>
+                            <div class="form-group col-3 required">
+                                <label for="driver_passport" class="control-label">Паспорт</label>
+                                <input type="text" name="driver_passport" class="form-control"
+                                       id="driver_passport" placeholder="Мамедов 1"
+                                       value="{{$order ? $order->driver_passport : old('driver_passport')}}">
+
+                            </div>
+                            <div class="form-group col-3 required">
+                                <label for="driver_birth_date" class="control-label">Дата рождения водителя</label>
+                                <input type="date" name="driver_birth_date" class="form-control"
+                                       id="driver_passport" placeholder="Мамедов 1"
+                                       value="{{$order ? $order->driver_birth_date : old('driver_birth_date')}}">
+                            </div>
+                            <div class="form-group col-3">
+                                <label for="second_driver_full_name" class="control-label">Водитель 2</label>
+                                <input type="text" name="second_driver_full_name" class="form-control"
+                                       id="second_driver_full_name" placeholder="Мамедов 2"
+                                       value="{{$order ? $order->second_driver_full_name : old('second_driver_full_name')}}">
                             </div>
                             <div class="form-group col-3 required">
                                 <label for="car_brand" class="control-label">Марка машины</label>
@@ -83,24 +88,27 @@
                                 <label for="second_car_brand" class="control-label">Марка машины 2</label>
                                 <input type="text" name="second_car_brand" class="form-control" id="second_car_brand"
                                        value="{{$order ? $order->second_car_brand : old('second_car_brand')}}">
-
                             </div>
                             <div class="form-group col-3">
                                 <label for="second_car_number" class="control-label">Номер машины 2</label>
                                 <input type="text" name="second_car_number" class="form-control" id="second_car_number"
                                        value="{{$order ? $order->second_car_number : old('second_car_number')}}">
-
                             </div>
                             <div class="form-group col-6 required">
                                 <label for="address_id" class="control-label">Адрес</label>
-                                <select name="address_id" class="form-control" id="address_id">
-                                    <option value="">Не выбрано</option>
+                                <select name="address_id" class="form-control js-example-basic-single" id="address_id" required>
+                                    <option value=""></option>
                                     @foreach($addresses as $address)
                                         <option value="{{$address->id}}" {{$order ? $order->address_id == $address->id
                                         ? 'selected' : '' : ''}}>
                                             {{$address->name}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="contract_person" class="control-label">Договор ЧЛ</label>
+                                <input type="text" name="contract_person" class="form-control" id="contract_person"
+                                       value="{{$order ? $order->contract_person : old('contract_person')}}">
                             </div>
                         </div>
                         <div id="products">
@@ -111,9 +119,9 @@
                                         <div class="form-group col-6 required">
                                             <label for="product_id{{$order_product->id}}"
                                                    class="control-label">Продукт</label>
-                                            <select name="products[{{$order_product->id}}][id]" class="form-control"
+                                            <select name="products[{{$order_product->id}}][id]" class="form-control js-example-basic-single"
                                                     id="product_id{{$order_product->id}}" required>
-                                                <option value="">Не выбрано</option>
+                                                <option value=""></option>
                                                 @foreach($products as $product)
                                                     <option value="{{$product->id}}" {{$order_product->product_id == $product->id
                                         ? 'selected' : ''}}>
@@ -124,9 +132,9 @@
                                         <div class="form-group col-6 required">
                                             <label for="box_id{{$order_product->id}}" class="control-label">Тип
                                                 коробки</label>
-                                            <select name="products[{{$order_product->id}}][box]" class="form-control"
+                                            <select name="products[{{$order_product->id}}][box]" class="form-control js-example-basic-single"
                                                     id="box_id{{$order_product->id}}" required>
-                                                <option value="">Не выбрано</option>
+                                                <option value=""></option>
                                                 @foreach($boxes as $box)
                                                     <option value="{{$box->id}}" {{$order_product->box_id == $box->id
                                         ? 'selected' : ''}}>
@@ -177,6 +185,7 @@
     </div>
 @endsection
 @section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         let orderProductId = '{{$order ? !$order->products->isEmpty() ? $order->products->last()->id : 0 : 0}}';
         $(document).ready(function(){
@@ -192,8 +201,8 @@
             newProductForm.id = 'product_form';
             newProductForm.innerHTML = `<div class="form-group col-6 required">
                                     <label for="product_id${orderProductId}" class="control-label">Продукт</label>
-                                    <select name="products[${orderProductId}][id]" class="form-control" required id="product_id${orderProductId}">
-                                        <option value="">Не выбрано</option>
+                                    <select name="products[${orderProductId}][id]" class="form-control js-example-basic-single" required id="product_id${orderProductId}">
+                                        <option value=""></option>
                                         @foreach($products as $product)
             <option value="{{$product->id}}">{{$product->name}}</option>
                                         @endforeach
@@ -201,11 +210,11 @@
         </div>
         <div class="form-group col-6 required">
             <label for="box_id${orderProductId}" class="control-label">Тип коробки</label>
-                                    <select name="products[${orderProductId}][box]" class="form-control" id="box_id${orderProductId}"
+                                    <select name="products[${orderProductId}][box]" class="form-control js-example-basic-single" id="box_id${orderProductId}"
                                         required>
-                                        <option value="">Не выбрано</option>
+                                        <option value=""></option>
                                         @foreach($boxes as $box)
-            <option value="{{$product->id}}">{{$box->name}}</option>
+            <option value="{{$box->id}}">{{$box->name}}</option>
                                         @endforeach
             </select>
         </div>
@@ -231,7 +240,31 @@
             $(".removeProduct").click(function(event){
                 event.target.parentNode.parentNode.remove();
             });
+            $('.js-example-basic-single').select2({
+                placeholder: "Не выбрано",
+                allowClear: true,
+                theme: "classic",
+                width: '100%',
+                language: {
+                    noResults: function () {
+                        return "Не найдено!";
+                    }
+                }
+            });
         }
 
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2({
+                placeholder: "Не выбрано",
+                allowClear: true,
+                theme: "classic",
+                width: '100%',
+                language: {
+                    noResults: function () {
+                        return "Не найдено!";
+                    }
+                }
+            });
+        });
     </script>
 @endsection

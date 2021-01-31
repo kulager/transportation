@@ -30,7 +30,7 @@ class Sidebar extends BaseComponent
             $this->navItem(route('address.index'), 'ti-location-arrow', 'Адреса'),
             $this->navItem(route('box.index'), 'ti-dropbox', 'Типы ящика'),
             $this->navItem(route('product.index'), 'ti-shopping-cart', 'Продукты'),
-            $this->navItem(route('driver.index'), 'ti-truck', 'Водители'),
+//            $this->navItem(route('driver.index'), 'ti-truck', 'Водители'),
             $this->navItem(route('company.index'), 'ti-direction-alt', 'Компании'),
         ];
     }

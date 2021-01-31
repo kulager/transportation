@@ -11,10 +11,15 @@ class OrderWebRequest extends WebBaseRequest
     {
         return [
             'id' => ['numeric', 'exists:orders,id', 'nullable'],
-            'driver_id' => ['required', 'numeric', 'exists:drivers,id'],
+            'driver_full_name' => ['string', 'required'],
+            'driver_passport' => ['string', 'required'],
+            'driver_birth_date' => ['date', 'required'],
+            'second_driver_full_name' => ['string', 'nullable'],
+            'contract_person' => ['string', 'nullable'],
+//            'driver_id' => ['required', 'numeric', 'exists:drivers,id'],
             'company_id' => ['required', 'numeric', 'exists:companies,id'],
             'address_id' => ['required', 'numeric', 'exists:addresses,id'],
-            'second_driver_id' => ['numeric', 'exists:drivers,id', 'nullable'],
+//            'second_driver_id' => ['numeric', 'exists:drivers,id', 'nullable'],
             'date' => ['date', 'required'],
             'car_brand' => ['string', 'required'],
             'car_number' => ['string', 'required'],

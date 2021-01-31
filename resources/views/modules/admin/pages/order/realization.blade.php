@@ -2149,7 +2149,7 @@ DIV будут заменены.-->
             <td class=xl77>&nbsp;</td>
             <td class=xl63></td>
             <td class=xl80>/</td>
-            <td colspan=10 class=xl96>{{$order->driver->full_name}}</td>
+            <td colspan=10 class=xl96>{{$order->driver_full_name}}</td>
             <td class=xl63></td>
         </tr>
         <tr height=15 style='mso-height-source:userset;height:11.5pt'>

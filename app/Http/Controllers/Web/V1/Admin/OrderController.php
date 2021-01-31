@@ -3,63 +3,69 @@
 namespace App\Http\Controllers\Web\V1\Admin;
 
 use App\Exceptions\Web\WebServiceExplainedException;
-use App\Exports\OrderExport;
 use App\Http\Controllers\Web\WebBaseController;
 use App\Http\Requests\Web\V1\OrderWebRequest;
 use App\Models\Entities\Address;
 use App\Models\Entities\Box;
 use App\Models\Entities\Company;
-use App\Models\Entities\Driver;
 use App\Models\Entities\Order;
 use App\Models\Entities\OrderProduct;
 use App\Models\Entities\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
 use NumberFormatter;
 use PhpOffice\PhpWord\TemplateProcessor;
+use ZipArchive;
 
 
 class OrderController extends WebBaseController
 {
-    public function index() {
+    public function index()
+    {
         $orders = Order::orderBy('created_at', 'desc')->paginate(10);
         return $this->adminPagesView('order.index', compact('orders'));
     }
 
-    public function create($id = null) {
+    public function create($id = null)
+    {
         $order = null;
 
-        if($id) {
+        if ($id) {
             $order = Order::with('products')->find($id);
         }
         $addresses = Address::all();
-        $drivers = Driver::all();
         $products = Product::all();
         $boxes = Box::all();
         $companies = Company::all();
 
-        return $this->adminPagesView('order.form', compact('order', 'addresses', 'drivers',
+        foreach ($addresses as $address) {
+            $address->name = $address->city->country->name . ', ' . $address->city->name . ', ' . $address->name;
+        }
+        return $this->adminPagesView('order.form', compact('order', 'addresses',
             'products', 'boxes', 'companies'));
     }
 
-    public function store(OrderWebRequest $request) {
+    public function store(OrderWebRequest $request)
+    {
         $order = new Order();
-        if($request->id) {
+        if ($request->id) {
             $order = Order::find($request->id);
         }
         try {
             $product_ids = [];
             $products = [];
             DB::beginTransaction();
-            $order->driver_id = $request->driver_id;
+            $order->driver_full_name = $request->driver_full_name;
+            $order->second_driver_full_name = $request->second_driver_full_name;
+            $order->contract_person = $request->contract_person;
+            $order->driver_passport = $request->driver_passport;
+            $order->driver_birth_date = $request->driver_birth_date;
             $order->document_id = $request->document_id;
             $order->company_id = $request->company_id;
             $order->address_id = $request->address_id;
 
             $order->deadline = Carbon::create($request->date)->addDays(11);
             $order->date = $request->date;
-            $order->second_driver_id = $request->second_driver_id;
             $order->car_number = $request->car_number;
             $order->car_brand = $request->car_brand;
             $order->second_car_brand = $request->second_car_brand;
@@ -67,7 +73,7 @@ class OrderController extends WebBaseController
             $order->save();
             $now = now();
             foreach ($request->products as $product) {
-                if(!$request->id) {
+                if (!$request->id) {
                     $products[] = [
                         'box_id' => $product['box'],
                         'product_id' => $product['id'],
@@ -83,7 +89,7 @@ class OrderController extends WebBaseController
                 }
             }
 
-            if($product_ids) {
+            if ($product_ids) {
                 $order_products = OrderProduct::where('order_id', $order->id)->whereIn('product_id', $product_ids)->get();
                 foreach ($request->products as $product) {
                     $order_product = $order_products->where('product_id', $product['id'])->first();
@@ -109,102 +115,158 @@ class OrderController extends WebBaseController
                 }
             }
             OrderProduct::insert($products);
-            if($product_ids) {
+            if ($product_ids) {
                 OrderProduct::where('order_id', $order->id)->whereNotIn('product_id', $product_ids)->delete();
             }
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
-            throw new WebServiceExplainedException('Техническая ошибка! '. $exception->getMessage());
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $exception->getMessage());
         }
         $this->edited();
         return redirect()->route('order.index');
 
     }
 
-    public function cmr($id) {
+    public function cmr($id)
+    {
         $order = $this->checkOrder($id);
-        $my_template = new TemplateProcessor(storage_path('templates/cmr.docx'));
-        $my_template->setValue('country', $order->address->city->country->name);
-        $my_template->setValue('address', 'г. '.$order->address->city->name. ', '.$order->address->name);
-        $my_template->setValue('document_id', $order->document_id);
-        $my_template->setValue('company_name', $order->company->name);
-        $my_template->setValue('company_inn', $order->company->bin_inn);
-        $my_template->setValue('car_brand', $order->car_brand);
-        $my_template->setValue('car_number', $order->car_number);
-        $my_template->setValue('second_car_brand', $order->second_car_brand);
-        $my_template->setValue('second_car_number', $order->second_car_number);
-        $my_template->setValue('driver', explode($order->driver->full_name, ' ')[0]);
-        $my_template->setValue('second_driver', $order->secondDriver ?
-            explode($order->secondDriver->full_name, ' ')[0] : '');
-        $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D MMMM Y год'));
-        $my_template->setValue('day', Carbon::create($order->date)->day);
-        $my_template->setValue('month', Carbon::create($order->date)->month);
-        $my_template->setValue('year', Carbon::create($order->date)->year);
+        if (!$order->driver_full_name && !$order->driver_passport && !$order->birth_date) {
+            throw new WebServiceExplainedException('Заполните водителя!');
 
-        $count = 0;
+        }
+
+        if (!$order->contract_person) {
+            throw new WebServiceExplainedException('Заполните ЧЛ!');
+        }
+
+        $path = $this->createCmrDoc($order);
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
+    public function driver($id)
+    {
+
+        $order = $this->checkOrder($id);
+        if (!$order->driver_full_name && !$order->driver_passport && !$order->birth_date) {
+            throw new WebServiceExplainedException('Заполните водителя!');
+
+        }
+
+        $path = $this->createDriverDoc($order);
+
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
+    public function goods($id)
+    {
+        $order = $this->checkOrder($id);
+        $path = $this->createGoodsDoc($order);
+
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
+    public function contract($id)
+    {
+        $order = $this->checkOrder($id);
+        $path = $this->createContractDoc($order);
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
+    public function realization($id)
+    {
+        $order = $this->checkOrder($id);
+        $total_net = 0;
         $total = 0;
-        $products = [];
+        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
+        $i = 1;
         foreach ($order->products as $product) {
-            $products[] = [
-                'product_tn_id' => $product->product->tn_id,
-                'product_name' => $product->product->name,
-                'box' => $product->box->name,
-                'place_quantity' => $product->place_quantity,
-                'net' => $product->net_weight,
-                'gross' => $product->gross_weight,
-                'row' => '',
-            ];
             $total += $product->product->price * $product->net_weight;
-            $count++;
+            $total_net += $product->net_weight;
+
         }
-        $my_template->cloneRowAndSetValues('row', $products);
-
-            $my_template->setValue('total', $total);
-
-        try{
-            $my_template->saveAs(storage_path('cmr.docx'));
-        }catch (Exception $e){
-            throw new WebServiceExplainedException('Техническая ошибка! '. $e->getMessage());
-        }
-
-        return response()->download(storage_path('cmr.docx'))->deleteFileAfterSend();
+        $total_net_format = $this->upperFirst($digit->format($total_net), "UTF-8");
+        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
+        $date_format = Carbon::create($order->date)->format('d.m.Y');
+        return $this->adminPagesView('order.realization', compact('order', 'date_format',
+            'total', 'total_net', 'total_format', 'total_net_format', 'i'));
     }
 
-    public function driver($id) {
+    public function invoice($id)
+    {
 
         $order = $this->checkOrder($id);
-        $my_template = new TemplateProcessor(storage_path('templates/driver.docx'));
-        $my_template->setValue('country', $order->address->city->country->name);
-        $my_template->setValue('city', $order->address->city->name);
-        $my_template->setValue('full_name', $order->driver->full_name);
-        $my_template->setValue('birth_date', Carbon::create($order->driver->birth_date)->format('d.m.Y'));
-        $my_template->setValue('document_id', $order->document_id);
-        $my_template->setValue('date', Carbon::create($order->date)->format('d.m.Y'));
-        $my_template->setValue('passport', $order->driver->passport);
-        $my_template->setValue('product_name', $order->products->first()->product->name);
-        try{
-            $my_template->saveAs(storage_path('driver.docx'));
-        }catch (Exception $e){
-            throw new WebServiceExplainedException('Техническая ошибка! '. $e->getMessage());
+        $total = 0;
+        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
+        $i = 1;
+        foreach ($order->products as $product) {
+            $total += $product->product->price * $product->net_weight;
         }
-
-        return response()->download(storage_path('driver.docx'))->deleteFileAfterSend();
+        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
+        $date_format = Carbon::create($order->date)->format('d.m.Y');
+        return $this->adminPagesView('order.invoice', compact('order', 'date_format',
+            'total', 'total_format', 'i'));
     }
 
-    public function goods($id) {
+    private function checkOrder($id)
+    {
+        $order = Order::with('products.product', 'products.box', 'address.city.country', 'company')->find($id);
+        if (!$order) throw new WebServiceExplainedException('Заказ не найден!');
+        return $order;
+    }
+
+    function upperFirst($string, $encoding)
+    {
+        $firstChar = mb_substr($string, 0, 1, $encoding);
+        $then = mb_substr($string, 1, null, $encoding);
+        return mb_strtoupper($firstChar, $encoding) . $then;
+    }
+
+    public function zipDownload($id)
+    {
         $order = $this->checkOrder($id);
+
+        if (!$order->contract_person) {
+            throw new WebServiceExplainedException('Заполните ЧЛ!');
+        }
+
+        if (!$order->driver_full_name && !$order->driver_passport && !$order->birth_date) {
+            throw new WebServiceExplainedException('Заполните водителя!');
+
+        }
+
+        $driver = $this->createDriverDoc($order);
+        $contract = $this->createContractDoc($order);
+        $goods = $this->createGoodsDoc($order);
+        $cmr = $this->createCmrDoc($order);
+
+        $zip = new ZipArchive();
+        if ($zip->open(storage_path('templates/common.zip'), ZipArchive::CREATE) === TRUE) {
+            $zip->addFile($driver, 'driver.docx');
+            $zip->addFile($contract, 'contract.docx');
+            $zip->addFile($goods, 'goods.docx');
+            $zip->addFile($cmr, 'cmr.docx');
+            $zip->close();
+
+            return response()->download(storage_path('templates/common.zip'),
+                $order->company->name. '№'.$order->document_id.'.zip')->deleteFileAfterSend();
+        }
+        return redirect()->route('order.index');
+
+    }
+
+    private function createGoodsDoc($order) {
         $my_template = new TemplateProcessor(storage_path('templates/goods.docx'));
-        $my_template->setValue('address', $order->address->city->country->second_name.', г. '.$order->address->city->name. ', '.$order->address->name);
+        $my_template->setValue('address', $order->address->city->country->second_name . ', г. ' . $order->address->city->name . ', ' . $order->address->name);
         $my_template->setValue('company_name', $order->company->name);
         $my_template->setValue('company_inn', $order->company->bin_inn);
-        $my_template->setValue('driver_full_name', $order->driver->full_name);
-        $my_template->setValue('driver_birth_date', Carbon::create($order->driver->birth_date)->format('d.m.Y'));
+        $my_template->setValue('driver_full_name', $order->driver_full_name);
+        $my_template->setValue('driver_birth_date', Carbon::create($order->driver_birth_date)->format('d.m.Y'));
         $my_template->setValue('document_id', $order->document_id);
         $my_template->setValue('date', Carbon::create($order->date)->format('d.m.Y'));
         $my_template->setValue('date_format', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('"D" MMMM Y г.'));
         $my_template->setValue('deadline_format', Carbon::createFromFormat('Y-m-d', $order->deadline)->isoFormat('"D" MMMM Y г.'));
-        $my_template->setValue('driver_passport', $order->driver->passport);
+        $my_template->setValue('driver_passport', $order->driver_passport);
         $my_template->setValue('car_brand', $order->car_brand);
         $my_template->setValue('car_number', $order->car_number);
         $my_template->setValue('second_car_brand', $order->second_car_brand);
@@ -243,72 +305,110 @@ class OrderController extends WebBaseController
         $my_template->setValue('total_gross', $this->upperFirst($digit->format($total_gross), "UTF-8"));
         $my_template->setValue('total_place', $this->upperFirst($digit->format($total_place), "UTF-8"));
 
-        try{
-            $my_template->saveAs(storage_path('goods.docx'));
-        }catch (\Exception $e){
-            throw new WebServiceExplainedException('Техническая ошибка! '. $e->getMessage());
+        try {
+            $my_template->saveAs(storage_path('docs/goods.docx'));
+        } catch (\Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
         }
 
-        return response()->download(storage_path('goods.docx'))->deleteFileAfterSend();
+        return storage_path('docs/goods.docx');
     }
 
-    public function contract($id) {
-        $order = $this->checkOrder($id);
+    private function createContractDoc($order) {
         $my_template = new TemplateProcessor(storage_path('templates/contract.docx'));
+        if (!$order->contract_person) {
+            throw new WebServiceExplainedException('Заполните ЧЛ!');
+
+        }
+
+        $splitted = explode(' ', $order->contract_person, 3);
+        $format_contract_person = $splitted[0] . ' ';
+        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
+        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
         $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('contract_person', $order->contract_person);
+        $my_template->setValue('contract_person_format', $format_contract_person);
         $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D «MMMM» Y год'));
 
-        try{
-            $my_template->saveAs(storage_path('contract.docx'));
-        }catch (\Exception $e){
-            throw new WebServiceExplainedException('Техническая ошибка! '. $e->getMessage());
+        try {
+            $my_template->saveAs(storage_path('docs/contract.docx'));
+        } catch (\Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
         }
-
-        return response()->download(storage_path('contract.docx'))->deleteFileAfterSend();
+        return storage_path('docs/contract.docx');
     }
 
-    public function realization($id) {
-        $order = $this->checkOrder($id);
-        $total_net = 0;
+    private function createDriverDoc($order) {
+        $my_template = new TemplateProcessor(storage_path('templates/driver.docx'));
+        $my_template->setValue('country', $order->address->city->country->name);
+        $my_template->setValue('city', $order->address->city->name);
+        $my_template->setValue('full_name', $order->driver_full_name);
+        $my_template->setValue('birth_date', Carbon::create($order->driver_birth_date)->format('d.m.Y'));
+        $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('date', Carbon::create($order->date)->format('d.m.Y'));
+        $my_template->setValue('passport', $order->driver_passport);
+        $my_template->setValue('product_name', $order->products->first()->product->name);
+
+        try {
+            $my_template->saveAs(storage_path('docs/driver.docx'));
+        } catch (Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
+        }
+
+        return storage_path('docs/driver.docx');
+    }
+
+    private function createCmrDoc($order) {
+        $splitted = explode(' ', $order->contract_person, 3);
+        $format_contract_person = $splitted[0] . ' ';
+        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
+        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
+
+        $my_template = new TemplateProcessor(storage_path('templates/cmr.docx'));
+        $my_template->setValue('country', $order->address->city->country->name);
+        $my_template->setValue('address', 'г. ' . $order->address->city->name . ', ' . $order->address->name);
+        $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('company_name', $order->company->name);
+        $my_template->setValue('company_inn', $order->company->bin_inn);
+        $my_template->setValue('car_brand', $order->car_brand);
+        $my_template->setValue('car_number', $order->car_number);
+        $my_template->setValue('second_car_brand', $order->second_car_brand);
+        $my_template->setValue('second_car_number', $order->second_car_number);
+        $my_template->setValue('contract_person', $format_contract_person);
+        $my_template->setValue('driver', explode($order->driver_full_name, ' ')[0]);
+        $my_template->setValue('second_driver', $order->second_driver_full_name ?
+            explode($order->second_driver_full_name, ' ')[0] : '');
+        $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D MMMM Y год'));
+        $my_template->setValue('day', Carbon::create($order->date)->day);
+        $my_template->setValue('month', Carbon::create($order->date)->month);
+        $my_template->setValue('year', Carbon::create($order->date)->year);
+
+        $count = 0;
         $total = 0;
-        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
-        $i = 1;
+        $products = [];
         foreach ($order->products as $product) {
+            $products[] = [
+                'product_tn_id' => $product->product->tn_id,
+                'product_name' => $product->product->name,
+                'box' => $product->box->name,
+                'place_quantity' => $product->place_quantity,
+                'net' => $product->net_weight,
+                'gross' => $product->gross_weight,
+                'row' => '',
+            ];
             $total += $product->product->price * $product->net_weight;
-            $total_net += $product->net_weight;
-
+            $count++;
         }
-        $total_net_format = $this->upperFirst($digit->format($total_net), "UTF-8");
-        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
-        $date_format = Carbon::create($order->date)->format('d.m.Y');
-        return $this->adminPagesView('order.realization', compact('order', 'date_format',
-            'total', 'total_net', 'total_format', 'total_net_format', 'i'));
-    }
+        $my_template->cloneRowAndSetValues('row', $products);
 
-    public function invoice($id) {
-        $order = $this->checkOrder($id);
-        $total = 0;
-        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
-        $i = 1;
-        foreach ($order->products as $product) {
-            $total += $product->product->price * $product->net_weight;
+        $my_template->setValue('total', $total);
+
+        try {
+            $my_template->saveAs(storage_path('docs/cmr.docx'));
+        } catch (Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
         }
-        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
-        $date_format = Carbon::create($order->date)->format('d.m.Y');
-        return $this->adminPagesView('order.invoice', compact('order', 'date_format',
-            'total', 'total_format', 'i'));
-    }
 
-    private function checkOrder($id) {
-        $order = Order::with('products.product', 'products.box', 'address.city.country', 'company', 'driver', 'secondDriver')->find($id);
-        if(!$order) throw new WebServiceExplainedException('Заказ не найден!');
-        return $order;
-    }
-
-    function upperFirst($string, $encoding)
-    {
-        $firstChar = mb_substr($string, 0, 1, $encoding);
-        $then = mb_substr($string, 1, null, $encoding);
-        return mb_strtoupper($firstChar, $encoding) . $then;
+        return storage_path('docs/cmr.docx');
     }
 }

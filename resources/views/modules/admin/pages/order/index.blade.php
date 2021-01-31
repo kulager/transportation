@@ -60,6 +60,10 @@
                                         <a class="btn btn-outline-primary btn-sm" href="{{route('order.invoice',
                                             ['id' => $order->id])}}" target="_blank">Счет-Фактура
                                         </a>
+                                        <form method="post" action="{{route('order.zip', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">ZIP</button>
+                                        </form>
                                         {{--                                        <button class="btn btn-outline-danger btn-sm" data-toggle="modal"--}}
                                         {{--                                                data-target="#delete{{$company->id}}"><i class="ti ti-trash"></i>--}}
                                         {{--                                        </button>--}}

@@ -14,12 +14,14 @@
         table {
             mso-displayed-decimal-separator: "\,";
             mso-displayed-thousand-separator: " ";
+
         }
 
         @page {
-            margin: 0 .75in 0 1.9in;
+            margin: 0 .5in 0 0.5in;
             mso-header-margin: .51in;
             mso-footer-margin: .51in;
+
         }
 
         .font0 {
@@ -525,7 +527,7 @@ DIV будут заменены.-->
 <div id="счет-фактура_32566" align=center x:publishsource="Excel">
 
     <table border=0 cellpadding=0 cellspacing=0 width=643 style='border-collapse:
- collapse;table-layout:fixed;width:483pt'>
+ collapse;width:483pt;'>
         <col width=36 style='mso-width-source:userset;mso-width-alt:1728;width:27pt'>
         <col width=153 style='mso-width-source:userset;mso-width-alt:7360;width:115pt'>
         <col width=33 style='mso-width-source:userset;mso-width-alt:1600;width:25pt'>
@@ -541,7 +543,7 @@ DIV будут заменены.-->
  width:41pt'>
         <tr height=21 style='height:16.0pt'>
             <td colspan=11 height=21 class=xl95 width=643 style='height:16.0pt;
-  width:483pt; padding-top: 100pt'>Счет-фактура №{{$order->document_id}} от {{$date_format}} г
+  width:483pt; padding-top: 40pt'>Счет-фактура №{{$order->document_id}} от {{$date_format}} г
             </td>
         </tr>
         <tr height=15 style='mso-height-source:userset;height:11.25pt'>
@@ -663,7 +665,7 @@ DIV будут заменены.-->
             <td colspan=10 height=36 class=xl104 width=590 style='height:27.0pt;
   width:443pt'>ИИК покупателя: КПП: 772701001, ОГРН: 5147746367995, Р/с:
                 40702810700000148919 В ПАО «ПРОМСВЯЗЬБАНК»<span
-                    style='mso-spacerun:yes'>                    </span>г. Новосибирск, К/с:
+                    style='mso-spacerun:yes'>                    </span>г. {{$order->address->city->name}}, К/с:
                 30101810400000000555 БИК: 044525555<br>
             </td>
             <td class=xl78>(10б)</td>

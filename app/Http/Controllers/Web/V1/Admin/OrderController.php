@@ -212,6 +212,14 @@ class OrderController extends WebBaseController
     {
         $order = Order::with('products.product', 'products.box', 'address.city.country', 'company')->find($id);
         if (!$order) throw new WebServiceExplainedException('Заказ не найден!');
+        if (!$order->driver_full_name && !$order->driver_passport && !$order->birth_date) {
+            throw new WebServiceExplainedException('Заполните водителя!');
+
+        }
+
+        if (!$order->contract_person) {
+            throw new WebServiceExplainedException('Заполните ЧЛ!');
+        }
         return $order;
     }
 
@@ -225,15 +233,6 @@ class OrderController extends WebBaseController
     public function zipDownload($id)
     {
         $order = $this->checkOrder($id);
-
-        if (!$order->contract_person) {
-            throw new WebServiceExplainedException('Заполните ЧЛ!');
-        }
-
-        if (!$order->driver_full_name && !$order->driver_passport && !$order->birth_date) {
-            throw new WebServiceExplainedException('Заполните водителя!');
-
-        }
 
         $driver = $this->createDriverDoc($order);
         $contract = $this->createContractDoc($order);

@@ -53,20 +53,20 @@
                                 <label for="driver_full_name" class="control-label">Водитель 1</label>
                                 <input type="text" name="driver_full_name" class="form-control"
                                        id="driver_full_name" placeholder="Мамедов 1"
-                                       value="{{$order ? $order->driver_full_name : old('driver_full_name')}}">
+                                       value="{{$order ? $order->driver_full_name : old('driver_full_name')}}" required>
                             </div>
                             <div class="form-group col-3 required">
                                 <label for="driver_passport" class="control-label">Паспорт</label>
                                 <input type="text" name="driver_passport" class="form-control"
                                        id="driver_passport" placeholder="Мамедов 1"
-                                       value="{{$order ? $order->driver_passport : old('driver_passport')}}">
+                                       value="{{$order ? $order->driver_passport : old('driver_passport')}}" required>
 
                             </div>
                             <div class="form-group col-3 required">
                                 <label for="driver_birth_date" class="control-label">Дата рождения водителя</label>
                                 <input type="date" name="driver_birth_date" class="form-control"
                                        id="driver_passport" placeholder="Мамедов 1"
-                                       value="{{$order ? $order->driver_birth_date : old('driver_birth_date')}}">
+                                       value="{{$order ? $order->driver_birth_date : old('driver_birth_date')}}" required>
                             </div>
                             <div class="form-group col-3">
                                 <label for="second_driver_full_name" class="control-label">Водитель 2</label>

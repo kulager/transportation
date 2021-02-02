@@ -202,16 +202,21 @@ class OrderController extends WebBaseController
 
         $order = $this->checkOrder($id);
         $total = 0;
-        $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
         $i = 1;
         foreach ($order->products as $product) {
             $total += $product->product->price * $product->net_weight;
         }
-        $total_format = $this->upperFirst($digit->format($total), "UTF-8");
         $date_format = Carbon::create($order->date)->format('d.m.Y');
         return $this->adminPagesView('order.invoice', compact('order', 'date_format',
-            'total', 'total_format', 'i'));
+            'total', 'i'));
     }
+
+    public function invoiceTest($id) {
+        $order = $this->checkOrder($id);
+        $path = $this->createInvoiceDoc($order);
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
 
     private function checkOrder($id)
     {
@@ -240,6 +245,7 @@ class OrderController extends WebBaseController
         $contract = $this->createContractDoc($order);
         $goods = $this->createGoodsDoc($order);
         $cmr = $this->createCmrDoc($order);
+        $invoice = $this->createInvoiceDoc($order);
 
         $zip = new ZipArchive();
         if ($zip->open(storage_path('templates/common.zip'), ZipArchive::CREATE) === TRUE) {
@@ -247,6 +253,7 @@ class OrderController extends WebBaseController
             $zip->addFile($contract, 'dogovor.docx');
             $zip->addFile($goods, 'goods.docx');
             $zip->addFile($cmr, 'cmr.docx');
+            $zip->addFile($invoice, 'invoice.docx');
             $zip->close();
 
             return response()->download(storage_path('templates/common.zip'),
@@ -418,6 +425,46 @@ class OrderController extends WebBaseController
         }
 
         return storage_path('docs/cmr.docx');
+    }
+
+    private function createInvoiceDoc($order) {
+        $total = 0;
+        $row = 1;
+        foreach ($order->products as $product) {
+            $total += $product->product->price * $product->net_weight;
+        }
+
+        $date_format = Carbon::create($order->date)->format('d.m.Y');
+        $my_template = new TemplateProcessor(storage_path('templates/invoice.docx'));
+        $my_template->setValue('country', $order->address->city->country->second_name);
+        $my_template->setValue('company_name', $order->company->name);
+        $my_template->setValue('company_inn', $order->company->bin_inn);
+        $my_template->setValue('city', $order->address->city->name);
+        $my_template->setValue('address', $order->address->name);
+        $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('date_format', $date_format);
+        $products = [];
+        foreach ($order->products as $product) {
+            $products[] = [
+                'product_name' => $product->product->name,
+                'sum' => $product->product->price * $product->net_weight,
+                'product_net_weight' => $product->net_weight,
+                'product_price' => $product->product->price,
+                'row' => $row,
+            ];
+            $total += $product->product->price * $product->net_weight;
+            $row++;
+        }
+        $my_template->cloneRowAndSetValues('row', $products);
+
+        $my_template->setValue('total', $total);
+        try {
+            $my_template->saveAs(storage_path('docs/invoice.docx'));
+        } catch (Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
+        }
+
+        return storage_path('docs/invoice.docx');
     }
 
     private function formatContractPerson($contract_person)

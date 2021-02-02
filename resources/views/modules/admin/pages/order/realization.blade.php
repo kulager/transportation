@@ -1542,8 +1542,7 @@ DIV будут заменены.-->
             <td colspan=11 class=xl126 width=189 style='border-left:none;width:140pt'>{{$order->company->name}}
                 ИНН {{$order->company->bin_inn}}</td>
             <td colspan=9 class=xl125 width=177 style='border-left:none;width:131pt'>Бухгалтер</td>
-            <td colspan=9 class=xl126 width=151 style='border-left:none;width:112pt'>ЧЛ
-                {{$format_contract_person}}
+            <td colspan=9 class=xl126 width=151 style='border-left:none;width:112pt'>{{$order->contract_person}}
             </td>
             <td colspan=9 class=xl126 width=171 style='border-left:none;width:126pt'>№0{{$order->document_id}}
                 от {{$date_format}} г.

@@ -180,10 +180,10 @@ class OrderController extends WebBaseController
         $total = 0;
         $digit = new NumberFormatter("ru", NumberFormatter::SPELLOUT);
         $i = 1;
-        $splitted = explode(' ', $order->contract_person, 3);
-        $format_contract_person = $splitted[0] . ' ';
-        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
-        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
+//        $splitted = explode(' ', $order->contract_person, 3);
+//        $format_contract_person = $splitted[0] . ' ';
+//        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
+//        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
 
         foreach ($order->products as $product) {
             $total += $product->product->price * $product->net_weight;
@@ -194,7 +194,7 @@ class OrderController extends WebBaseController
         $total_format = $this->upperFirst($digit->format($total), "UTF-8");
         $date_format = Carbon::create($order->date)->format('d.m.Y');
         return $this->adminPagesView('order.realization', compact('order', 'date_format',
-            'total', 'total_net', 'total_format', 'total_net_format', 'i', 'format_contract_person'));
+            'total', 'total_net', 'total_format', 'total_net_format', 'i'));
     }
 
     public function invoice($id)
@@ -244,19 +244,20 @@ class OrderController extends WebBaseController
         $zip = new ZipArchive();
         if ($zip->open(storage_path('templates/common.zip'), ZipArchive::CREATE) === TRUE) {
             $zip->addFile($driver, 'driver.docx');
-            $zip->addFile($contract, 'contract.docx');
+            $zip->addFile($contract, 'dogovor.docx');
             $zip->addFile($goods, 'goods.docx');
             $zip->addFile($cmr, 'cmr.docx');
             $zip->close();
 
             return response()->download(storage_path('templates/common.zip'),
-                $order->company->name. '№'.$order->document_id.'.zip')->deleteFileAfterSend();
+                $order->company->name . '№' . $order->document_id . '.zip')->deleteFileAfterSend();
         }
         return redirect()->route('order.index');
 
     }
 
-    private function createGoodsDoc($order) {
+    private function createGoodsDoc($order)
+    {
         $my_template = new TemplateProcessor(storage_path('templates/goods.docx'));
         $my_template->setValue('address', $order->address->city->country->second_name . ', г. ' . $order->address->city->name . ', ' . $order->address->name);
         $my_template->setValue('company_name', $order->company->name);
@@ -315,31 +316,27 @@ class OrderController extends WebBaseController
         return storage_path('docs/goods.docx');
     }
 
-    private function createContractDoc($order) {
-        $my_template = new TemplateProcessor(storage_path('templates/contract.docx'));
-        if (!$order->contract_person) {
-            throw new WebServiceExplainedException('Заполните ЧЛ!');
+    private function createContractDoc($order)
+    {
+        $my_template = new TemplateProcessor(storage_path('templates/dogovor.docx'));
 
-        }
-
-        $splitted = explode(' ', $order->contract_person, 3);
-        $format_contract_person = $splitted[0] . ' ';
-        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
-        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
+        $format_contract_person = $this->formatContractPerson($order->contract_person);
         $my_template->setValue('document_id', $order->document_id);
         $my_template->setValue('contract_person', $order->contract_person);
         $my_template->setValue('contract_person_format', $format_contract_person);
+        $my_template->setValue('company_type', explode(' ', $order->contract_person)[0]);
         $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D «MMMM» Y год'));
 
         try {
-            $my_template->saveAs(storage_path('docs/contract.docx'));
+            $my_template->saveAs(storage_path('docs/dogovor.docx'));
         } catch (\Exception $e) {
             throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
         }
-        return storage_path('docs/contract.docx');
+        return storage_path('docs/dogovor.docx');
     }
 
-    private function createDriverDoc($order) {
+    private function createDriverDoc($order)
+    {
         $my_template = new TemplateProcessor(storage_path('templates/driver.docx'));
         $my_template->setValue('country', $order->address->city->country->name);
         $my_template->setValue('city', $order->address->city->name);
@@ -359,8 +356,9 @@ class OrderController extends WebBaseController
         return storage_path('docs/driver.docx');
     }
 
-    private function createCmrDoc($order) {
-        $splitted = explode(' ', $order->contract_person, 3);
+    private function createCmrDoc($order)
+    {
+//        $splitted = explode(' ', $order->contract_person, 3);
         $splitted_driver = explode(' ', $order->driver_full_name, 3);
         $splitted_second_driver = explode(' ', $order->second_driver_full_name, 3);
 
@@ -369,15 +367,12 @@ class OrderController extends WebBaseController
         $format_driver .= isset($splitted_driver[2]) ? mb_substr($splitted_driver[2], 0, 1) . '.' : '';
 
         $format_second_driver = '';
-        if($order->second_driver_full_name) {
+        if ($order->second_driver_full_name) {
             $format_second_driver = $splitted_second_driver[0] . ' ';
             $format_second_driver .= isset($splitted_second_driver[1]) ? mb_substr($splitted_second_driver[1], 0, 1) . '.' : '';
             $format_second_driver .= isset($splitted_second_driver[2]) ? mb_substr($splitted_second_driver[2], 0, 1) . '.' : '';
         }
 
-        $format_contract_person = $splitted[0] . ' ';
-        $format_contract_person .= isset($splitted[1]) ? mb_substr($splitted[1], 0, 1) . '.' : '';
-        $format_contract_person .= isset($splitted[2]) ? mb_substr($splitted[2], 0, 1) . '.' : '';
         $my_template = new TemplateProcessor(storage_path('templates/cmr.docx'));
         $my_template->setValue('country', $order->address->city->country->name);
         $my_template->setValue('address', 'г. ' . $order->address->city->name . ', ' . $order->address->name);
@@ -388,7 +383,7 @@ class OrderController extends WebBaseController
         $my_template->setValue('car_number', $order->car_number);
         $my_template->setValue('second_car_brand', $order->second_car_brand);
         $my_template->setValue('second_car_number', $order->second_car_number);
-        $my_template->setValue('contract_person', $format_contract_person);
+        $my_template->setValue('contract_person', $order->contract_person);
         $my_template->setValue('driver', $format_driver);
         $my_template->setValue('second_driver', $format_second_driver);
         $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('D MMMM Y год'));
@@ -423,5 +418,23 @@ class OrderController extends WebBaseController
         }
 
         return storage_path('docs/cmr.docx');
+    }
+
+    private function formatContractPerson($contract_person)
+    {
+        $format_contract_person = '';
+        $splitted = explode(' ', $contract_person, 2);
+        if ($splitted[0] == 'ЧЛ' || $splitted[0] == 'чл' || $splitted[0] == 'Чл') {
+            $splitted_name = explode(' ', $contract_person);
+            $format_contract_person = $splitted_name[1] . ' ';
+            $format_contract_person .= isset($splitted_name[2]) ? mb_substr($splitted_name[2], 0, 1) . '.' : '';
+            $format_contract_person .= isset($splitted_name[3]) ? mb_substr($splitted_name[3], 0, 1) . '.' : '';
+        } else if ($splitted[0] == 'ИП' || $splitted[0] == 'ип' || $splitted[0] == 'Ип') {
+            $splitted_name = explode('»', $contract_person);
+            $splitted_name = explode('«', $splitted_name[0]);
+            $format_contract_person = isset($splitted_name[1]) ? '«' . $splitted_name[1] . '»' : '';
+        }
+
+        return $format_contract_person;
     }
 }

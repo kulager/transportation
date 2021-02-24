@@ -554,13 +554,13 @@ DIV будут заменены.-->
         <tr height=31 style='mso-height-source:userset;height:23.25pt'>
             <td colspan=10 height=31 class=xl96 width=590 style='height:23.25pt;
   width:443pt'>Поставщик: ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ (ТОО)
-                &quot;KULAGER SERVICE&quot;
+                &quot;KULAGER SERVICE LTD&quot;
             </td>
             <td class=xl64>(2)</td>
         </tr>
         <tr class=xl65 height=32 style='mso-height-source:userset;height:24.75pt'>
             <td colspan=10 height=32 class=xl97 width=590 style='height:24.75pt;
-  width:443pt'>БИН и его адрес: 200840000773 Адрес: РК, г Шымкент, Абайский
+  width:443pt'>БИН и его адрес: 210240033998 Адрес: РК, г Шымкент, Абайский
                 р/н, трасса Темирлан, дом 40Б, кв.7
             </td>
             <td class=xl66>(2а)</td>
@@ -621,7 +621,7 @@ DIV будут заменены.-->
         <tr class=xl65 height=16 style='mso-height-source:userset;height:12.75pt'>
             <td colspan=10 height=16 class=xl65 width=590 style='height:12.75pt;
   width:443pt'>Услугодатель: Товарищество с ограниченной ответвенностью ТОО
-                &quot;KULAGER SERVICE&quot;
+                &quot;KULAGER SERVICE LTD&quot;
             </td>
             <td class=xl63>(8)</td>
         </tr>
@@ -656,8 +656,8 @@ DIV будут заменены.-->
         <tr class=xl65 height=32 style='mso-height-source:userset;height:24.75pt'>
             <td colspan=10 height=32 class=xl97 width=590 style='height:24.75pt;
   width:443pt'>БИН и его адрес: ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ
-                (ТОО) &quot;KULAGER SERVICE&quot;, РК, г Шымкент, Абайский р/н, трасса
-                Темирлан, дом 40Б, кв.7, БИН 200840000773
+                (ТОО) &quot;KULAGER SERVICE LTD&quot;, РК, г Шымкент, Абайский р/н, трасса
+                Темирлан, дом 40Б, кв.7, БИН 210240033998
             </td>
             <td class=xl66>(10а)</td>
         </tr>
@@ -763,7 +763,7 @@ DIV будут заменены.-->
         </tr>
         <tr height=37 style='mso-height-source:userset;height:28.5pt'>
             <td colspan=5 height=37 class=xl76 style='height:28.5pt'>Руководитель
-                организации ________________________Тохатова Ж.Н.
+                организации ________________________Алтөре К.О.
             </td>
             <td></td>
             <td class=xl76 colspan=5 style='mso-ignore:colspan'>ВЫДАЛ (ответственное лицо
@@ -774,7 +774,7 @@ DIV будут заменены.-->
             <td colspan=5 height=36 class=xl102 style='height:27.0pt'>(Ф.И.О., подпись)</td>
             <td>МП</td>
             <td></td>
-            <td colspan=4 class=xl101>директор Тохатова Ж.Н.</td>
+            <td colspan=4 class=xl101>директор Алтөре К.О.</td>
         </tr>
         <tr height=33 style='mso-height-source:userset;height:25.5pt'>
             <td height=33 colspan=5 style='height:25.5pt;mso-ignore:colspan'></td>

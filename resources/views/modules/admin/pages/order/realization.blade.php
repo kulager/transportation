@@ -1159,12 +1159,12 @@ DIV будут заменены.-->
   width:180pt'>Организация (индивидуальный предприниматель)
             </td>
             <td colspan=23 class=xl118 width=413 style='width:306pt'>ТОВАРИЩЕСТВО С
-                ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ (ТОО) &quot;KULAGER SERVICE&quot;
+                ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ (ТОО) &quot;KULAGER SERVICE LTD&quot;
             </td>
             <td class=xl63></td>
             <td class=xl63></td>
             <td class=xl66 colspan=4 style='mso-ignore:colspan'>ИИН/БИН</td>
-            <td colspan=7 class=xl119>200840000773</td>
+            <td colspan=7 class=xl119>210240033998</td>
         </tr>
         <tr height=16 style='mso-height-source:userset;height:12.0pt'>
             <td height=16 class=xl63 style='height:12.0pt'></td>
@@ -1537,7 +1537,8 @@ DIV будут заменены.-->
         </tr>
         <tr class=xl71 height=44 style='mso-height-source:userset;height:33.0pt'>
             <td colspan=11 height=44 class=xl125 width=205 style='height:33.0pt;
-  width:152pt'>ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ (ТОО) &quot;KULAGER SERVICE&quot;
+  width:152pt'>ТОВАРИЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ (ТОО)
+                &quot;KULAGER SERVICE LTD&quot;
             </td>
             <td colspan=11 class=xl126 width=189 style='border-left:none;width:140pt'>{{$order->company->name}}
                 ИНН {{$order->company->bin_inn}}</td>
@@ -1846,7 +1847,7 @@ DIV будут заменены.-->
             <td class=xl63></td>
             <td class=xl63></td>
             <td class=xl75 width=9 style='width:7pt'>/</td>
-            <td colspan=7 class=xl105 width=123 style='width:91pt'>Тохатова Ж.Н.</td>
+            <td colspan=7 class=xl105 width=123 style='width:91pt'>Алтөре К.О.</td>
             <td class=xl76>&nbsp;</td>
             <td class=xl63></td>
             <td class=xl63 colspan=5 style='mso-ignore:colspan'>По доверенности</td>
@@ -2137,7 +2138,7 @@ DIV будут заменены.-->
             <td class=xl63></td>
             <td class=xl63></td>
             <td class=xl63></td>
-            <td colspan=6 class=xl98>Тохатова Ж.Н.</td>
+            <td colspan=6 class=xl98>Алтөре К.О.</td>
             <td class=xl76>&nbsp;</td>
             <td class=xl63></td>
             <td class=xl63 colspan=5 style='mso-ignore:colspan'>Запасы получил</td>

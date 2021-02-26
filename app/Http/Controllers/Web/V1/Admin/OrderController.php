@@ -476,7 +476,8 @@ class OrderController extends WebBaseController
             $format_contract_person = $splitted_name[1] . ' ';
             $format_contract_person .= isset($splitted_name[2]) ? mb_substr($splitted_name[2], 0, 1) . '.' : '';
             $format_contract_person .= isset($splitted_name[3]) ? mb_substr($splitted_name[3], 0, 1) . '.' : '';
-        } else if ($splitted[0] == 'ИП' || $splitted[0] == 'ип' || $splitted[0] == 'Ип') {
+        } else if ($splitted[0] == 'ИП' || $splitted[0] == 'ип' || $splitted[0] == 'Ип' || $splitted[0] == 'ТОО'
+            || $splitted[0] == 'тоо' || $splitted[0] == 'Тоо') {
             $splitted_name = explode('»', $contract_person);
             $splitted_name = explode('«', $splitted_name[0]);
             $format_contract_person = isset($splitted_name[1]) ? '«' . $splitted_name[1] . '»' : '';

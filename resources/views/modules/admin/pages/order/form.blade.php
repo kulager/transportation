@@ -106,7 +106,7 @@
                                 </select>
                             </div>
                             <div class="form-group col-6">
-                                <label for="contract_person" class="control-label">Договор ЧЛ</label>
+                                <label for="contract_person" class="control-label">Договор ЧЛ, ИП, ТОО</label>
                                 <input type="text" name="contract_person" class="form-control" id="contract_person"
                                        value="{{$order ? $order->contract_person : old('contract_person')}}">
                             </div>

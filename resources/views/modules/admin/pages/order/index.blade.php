@@ -32,7 +32,7 @@
                                 <tr>
                                     <td>{{$order->id}}</td>
                                     <td>{{$order->document_id}}</td>
-                                    <td class="d-inline-flex align-items-center">
+                                    <td class="d-flex align-items-center flex-wrap">
                                         <a href="{{route('order.edit', ['id' => $order->id])}}"
                                            class="btn btn-outline-primary btn-sm"><i class="ti ti-pencil"></i>
                                         </a>
@@ -52,6 +52,10 @@
                                         <form method="post" action="{{route('order.contract', ['id' => $order->id])}}">
                                             @csrf
                                             <button class="btn btn-outline-primary btn-sm">Договор</button>
+                                        </form>
+                                        <form method="post" action="{{route('order.waybill', ['id' => $order->id])}}">
+                                            @csrf
+                                            <button class="btn btn-outline-primary btn-sm">Путевой</button>
                                         </form>
                                         <a class="btn btn-outline-primary btn-sm" href="{{route('order.realization',
                                             ['id' => $order->id])}}" target="_blank">Реализация ТМЗ

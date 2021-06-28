@@ -66,6 +66,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function () {
         Route::post('/order/driver/{id}', ['as' => 'order.driver', 'uses' => 'OrderController@driver'])->where('id', '[0-9]+');
         Route::post('/order/goods/{id}', ['as' => 'order.goods', 'uses' => 'OrderController@goods'])->where('id', '[0-9]+');
         Route::post('/order/contract/{id}', ['as' => 'order.contract', 'uses' => 'OrderController@contract'])->where('id', '[0-9]+');
+        Route::post('/order/waybill/{id}', ['as' => 'order.waybill', 'uses' => 'OrderController@waybill'])->where('id', '[0-9]+');
         Route::get('/order/realization/{id}', ['as' => 'order.realization', 'uses' => 'OrderController@realization'])->where('id', '[0-9]+');
         Route::get('/order/invoice/{id}', ['as' => 'order.invoice', 'uses' => 'OrderController@invoice'])->where('id', '[0-9]+');
         Route::post('/order/invoice/document/{id}', ['as' => 'order.invoice.document', 'uses' => 'OrderController@invoiceTest'])->where('id', '[0-9]+');

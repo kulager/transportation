@@ -166,6 +166,14 @@ class OrderController extends WebBaseController
         return response()->download($path)->deleteFileAfterSend();
     }
 
+    public function waybill($id)
+    {
+        $order = $this->checkOrder($id);
+        $path = $this->createWaybillDoc($order);
+
+        return response()->download($path)->deleteFileAfterSend();
+    }
+
     public function contract($id)
     {
         $order = $this->checkOrder($id);
@@ -342,6 +350,48 @@ class OrderController extends WebBaseController
         return storage_path('docs/dogovor.docx');
     }
 
+    private function createWaybillDoc($order) {
+        $my_template = new TemplateProcessor(storage_path('templates/waybill.docx'));
+
+        $splitted_driver = explode(' ', $order->driver_full_name, 3);
+        $splitted_second_driver = explode(' ', $order->second_driver_full_name, 3);
+
+        $format_driver = $splitted_driver[0] . ' ';
+        $format_driver .= isset($splitted_driver[1]) ? mb_substr($splitted_driver[1], 0, 1) . '.' : '';
+        $format_driver .= isset($splitted_driver[2]) ? mb_substr($splitted_driver[2], 0, 1) . '.' : '';
+
+        $format_second_driver = '';
+        if ($order->second_driver_full_name) {
+            $format_second_driver = $splitted_second_driver[0] . ' ';
+            $format_second_driver .= isset($splitted_second_driver[1]) ? mb_substr($splitted_second_driver[1], 0, 1) . '.' : '';
+            $format_second_driver .= isset($splitted_second_driver[2]) ? mb_substr($splitted_second_driver[2], 0, 1) . '.' : '';
+        }
+        $my_template->setValue('document_id', $order->document_id);
+        $my_template->setValue('country', $order->address->city->country->name);
+        $my_template->setValue('driver', $format_driver);
+        $my_template->setValue('second_driver', $format_second_driver);
+        $my_template->setValue('car_brand', $order->car_brand);
+        $my_template->setValue('car_number', $order->car_number);
+        $my_template->setValue('second_car_brand', $order->second_car_brand);
+        $my_template->setValue('second_car_number', $order->second_car_number);
+        $my_template->setValue('date', Carbon::createFromFormat('Y-m-d', $order->date)->isoFormat('"D" MMMM Y г.'));
+        foreach ($order->products as $product) {
+            $products[] = [
+                'product_name' => $product->product->name,
+                'net' => $product->net_weight,
+                'row' => '',
+                'city' => 'г.' .$order->address->city->name
+            ];
+        }
+        $my_template->cloneRowAndSetValues('row', $products);
+        try {
+            $my_template->saveAs(storage_path('docs/waybill.docx'));
+        } catch (Exception $e) {
+            throw new WebServiceExplainedException('Техническая ошибка! ' . $e->getMessage());
+        }
+
+        return storage_path('docs/waybill.docx');
+    }
     private function createDriverDoc($order)
     {
         $my_template = new TemplateProcessor(storage_path('templates/driver.docx'));
